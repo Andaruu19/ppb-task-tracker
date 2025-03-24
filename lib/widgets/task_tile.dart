@@ -25,7 +25,16 @@ class TaskTile extends StatelessWidget {
             : TextDecoration.none,
         ),
       ),
-      leading: _getPriorityIndicator(task.priority),
+      leading: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Checkbox(
+            value: task.isCompleted,
+            onChanged: onToggleComplete,
+          ),
+          _getPriorityIndicator(task.priority),
+        ],
+      ),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
