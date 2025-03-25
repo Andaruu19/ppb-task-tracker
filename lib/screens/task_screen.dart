@@ -47,6 +47,47 @@ class _TaskScreenState extends State<TaskScreen> {
       _controller.text = tasks[index].title;
       _selectedPriority = tasks[index].priority;
     });
+    _showEditTaskModal();
+  }
+
+  void _showEditTaskModal() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: _controller,
+                decoration: InputDecoration(
+                  labelText: 'Edit Task',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Priority: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                  _buildPriorityOption(TaskPriority.low, 'Low', Colors.green),
+                  _buildPriorityOption(TaskPriority.medium, 'Medium', Colors.orange),
+                  _buildPriorityOption(TaskPriority.high, 'High', Colors.red),
+                ],
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  _addTask();
+                  Navigator.pop(context);
+                },
+                child: Text('Save'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   void _cancelEditing() {
@@ -155,76 +196,5 @@ class _TaskScreenState extends State<TaskScreen> {
         },
       ),
     );
-  }
-}
-
-class AddTaskScreen extends StatefulWidget {
-  @override
-  _AddTaskScreenState createState() => _AddTaskScreenState();
-}
-
-class _AddTaskScreenState extends State<AddTaskScreen> {
-  TaskPriority _selectedPriority = TaskPriority.medium;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Add Task')),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.all(8.0),
-              child: TextField(
-                decoration: InputDecoration(
-                  labelText: 'Enter task',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            const Text('Priority', style: TextStyle(fontWeight: FontWeight.bold)),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildPriorityOption(TaskPriority.low, 'Low', Colors.green),
-                _buildPriorityOption(TaskPriority.medium, 'Medium', Colors.orange),
-                _buildPriorityOption(TaskPriority.high, 'High', Colors.red),
-              ],
-            ),
-            ElevatedButton(
-              onPressed: _submitTask,
-              child: Text('Add Task'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPriorityOption(TaskPriority priority, String label, Color color) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-      child: ChoiceChip(
-        label: Text(label),
-        selected: _selectedPriority == priority,
-        selectedColor: color.withOpacity(0.7),
-        onSelected: (selected) {
-          if (selected) {
-            setState(() {
-              _selectedPriority = priority;
-            });
-          }
-        },
-      ),
-    );
-  }
-
-  void _submitTask() {
-    final newTask = Task(
-      title: 'New Task',
-      priority: _selectedPriority,
-    );
-    // Save task and pop screen
   }
 }
