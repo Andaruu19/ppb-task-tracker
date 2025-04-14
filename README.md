@@ -1,16 +1,13 @@
-# task_tracker
+# Aplikasi Sederhana Task Tracker
+Farel Hanif Andaru - 5025221253
 
-A new Flutter project.
+## Sneak Peak & Video Demo
 
-## Getting Started
+Video demo: https://youtu.be/rhh8A49i-Fc
 
-This project is a starting point for a Flutter application.
+Sneak Peak Aplikasi:
 
-A few resources to get you started if this is your first Flutter project:
+![image](https://github.com/user-attachments/assets/3bf44e93-86ec-49f2-a282-11d113e947db)
+![image](https://github.com/user-attachments/assets/84e21cc0-ad58-4ae3-adfb-2c7de21cac31)
+![image](https://github.com/user-attachments/assets/427a56f4-f5cc-47f7-9a77-be87c266c45d)
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.

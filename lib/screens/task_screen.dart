@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/task.dart';
 import '../widgets/task_tile.dart';
+import '../objectbox.dart';
 
 class TaskScreen extends StatefulWidget {
   @override
@@ -8,42 +9,65 @@ class TaskScreen extends StatefulWidget {
 }
 
 class _TaskScreenState extends State<TaskScreen> {
+  late ObjectBox objectBox;
   List<Task> tasks = [];
   final TextEditingController _controller = TextEditingController();
   TaskPriority _selectedPriority = TaskPriority.medium;
-  int? _editingIndex;
+  int? _editingTaskId;
   bool _isEditing = false;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _initObjectBox();
+  }
+
+  Future<void> _initObjectBox() async {
+    objectBox = await ObjectBox.create();
+    _loadTasks();
+  }
+
+  void _loadTasks() {
+    setState(() {
+      tasks = objectBox.getAllTasks();
+      _isLoading = false;
+    });
+  }
 
   void _addTask() {
     if (_controller.text.isNotEmpty) {
       setState(() {
-        if (_isEditing && _editingIndex != null) {
-          // Update existing task
-          tasks[_editingIndex!] = Task(
+        if (_isEditing && _editingTaskId != null) {
+          final taskToEdit = tasks.firstWhere((task) => task.id == _editingTaskId);
+          Task updatedTask = Task(
+            id: taskToEdit.id,
             title: _controller.text,
+            isCompleted: taskToEdit.isCompleted,
             priority: _selectedPriority,
-            isCompleted: tasks[_editingIndex!].isCompleted,
           );
+          objectBox.updateTask(updatedTask);
           _isEditing = false;
-          _editingIndex = null;
+          _editingTaskId = null;
         } else {
-          // Add new task
-          tasks.add(Task(
+          Task newTask = Task(
             title: _controller.text,
             priority: _selectedPriority,
-          ));
+          );
+          objectBox.addTask(newTask);
         }
         _controller.clear();
-        // Reset priority back to medium after adding/editing task
         _selectedPriority = TaskPriority.medium;
+        _loadTasks();
       });
     }
   }
 
   void _editTask(int index) {
+    final task = tasks[index];
     setState(() {
       _isEditing = true;
-      _editingIndex = index;
+      _editingTaskId = task.id;
       _controller.text = tasks[index].title;
       _selectedPriority = tasks[index].priority;
     });
@@ -93,7 +117,7 @@ class _TaskScreenState extends State<TaskScreen> {
   void _cancelEditing() {
     setState(() {
       _isEditing = false;
-      _editingIndex = null;
+      _editingTaskId = null;
       _controller.clear();
       _selectedPriority = TaskPriority.medium;
     });
@@ -106,15 +130,13 @@ class _TaskScreenState extends State<TaskScreen> {
   }
 
   void _deleteTask(int index) {
-    setState(() {
-      tasks.removeAt(index);
-      if (_isEditing && _editingIndex == index) {
-        _cancelEditing();
-      } else if (_isEditing && _editingIndex! > index) {
-        // Adjust editing index if we deleted a task before the one we're editing
-        _editingIndex = _editingIndex! - 1;
-      }
-    });
+    final task = tasks[index];
+    objectBox.deleteTask(task.id);
+    _loadTasks();
+    
+    if (_isEditing && _editingTaskId == task.id) {
+      _cancelEditing();
+    }
   }
 
   @override
